@@ -6,7 +6,7 @@ const AlbumSchema = new Schema({
     ref: 'Artist',
     required: true,
   },
-  title: {
+  name: {
     type: String,
     required: true,
   },
@@ -14,12 +14,7 @@ const AlbumSchema = new Schema({
     type: Number,
     required: true,
   },
-  image: String,
-  isPublished: {
-    type: Boolean,
-    required: true,
-    default: false,
-  }
+  images: String,
 });
 
 const Album = model('Album', AlbumSchema);
