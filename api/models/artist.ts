@@ -5,7 +5,7 @@ const artistSchema = new Schema({
     type: String, 
     required: true 
     },
-  image: String,
+  images: String,
   info: String
 });
 
