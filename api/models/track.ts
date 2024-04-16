@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const TrackSchema = new Schema({
-  title: {
+  name: {
     type: String,
     required: true
   },
@@ -10,7 +10,10 @@ const TrackSchema = new Schema({
     ref: 'Album',
     required: true
   },
-  duration: String,
+  duration: {
+    type: String,
+    required: true 
+  },
 });
 
 const Track = model('Track', TrackSchema);
