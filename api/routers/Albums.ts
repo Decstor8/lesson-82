@@ -1,5 +1,5 @@
 import express from 'express';
-import Album from '../models/album';
+import Album from '../models/Album';
 import { imageUpload } from '../multer';
 import { Types } from 'mongoose';
 
