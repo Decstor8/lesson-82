@@ -20,3 +20,19 @@ export interface TracksTypes {
   duration: string;
   number: number;
 }
+
+export interface RegisterUsers {
+  username: string;
+  password: string;
+}
+
+export interface UserTypes {
+  _id: string;
+  username: string;
+  token: string;
+}
+export interface RegisterResponse {
+  message: string;
+  user: UserTypes;
+}
+
