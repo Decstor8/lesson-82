@@ -15,7 +15,7 @@ usersRouter.post('/', async (req, res, next) => {
 
         await user.save();
 
-        return res.send(user);
+        return res.send({message: "Registered successfully!", user});
     } catch (err) {
         if (err instanceof mongoose.Error.ValidationError) {
             return res.status(422).send(err);

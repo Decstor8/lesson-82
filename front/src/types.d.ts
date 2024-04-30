@@ -21,7 +21,7 @@ export interface TracksTypes {
   number: number;
 }
 
-export interface RegisterUsers {
+export interface RegisterMutation {
   username: string;
   password: string;
 }
@@ -34,5 +34,17 @@ export interface UserTypes {
 export interface RegisterResponse {
   message: string;
   user: UserTypes;
+}
+
+export interface ValidationError {
+  errors: {
+    [key: string]: {
+      name: string;
+      message: string;
+    }
+  },
+  message: string;
+  name: string;
+  _message: string;
 }
 
