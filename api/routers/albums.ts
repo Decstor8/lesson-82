@@ -36,7 +36,7 @@ albumRouter.get('/:id', async (req, res, next) => {
 albumRouter.post('/', imageUpload.single('images'), async (req, res) => {
   if (!req.body.name || !req.body.artist || !req.body.release) {
     return res.status(400).json({ message: 'Пожалуйста заполните все поля.' });
-  };
+  }
 
   const album = new Album({
     artist: req.body.artist,

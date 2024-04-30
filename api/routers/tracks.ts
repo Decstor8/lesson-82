@@ -20,7 +20,7 @@ trackRouter.get('/', async (req, res, next) => {
 });
 
 trackRouter.post('/', async (req, res, next) => {
-  const { name, album, duration } = req.body;
+  const { name, album, duration, number } = req.body;
   if (!name || !album || !duration) {
     return res.status(400).json({ message: "Название трека, сам альбом и продолжительность обязательны" });
   }
@@ -28,7 +28,8 @@ trackRouter.post('/', async (req, res, next) => {
   const track = new Track({
     name,
     album,
-    duration
+    duration,
+    number,
   });
 
   try {
