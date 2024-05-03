@@ -1,10 +1,10 @@
 import {useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from '../../App/hooks.ts';
-import {selectAlbums, selectIsLoading} from '../../store/albumsSlice.ts';
+import {selectAlbums, selectIsLoading} from './albumsSlice.ts';
 import {getAlbums, getArtists} from '../../store/asynсThunks.ts';
 import {Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, styled, Typography} from '@mui/material';
 import {Link as RouterLink, useParams} from 'react-router-dom';
-import {selectArtists} from '../../store/artistsSlice.ts';
+import {selectArtists} from '../Artists/artistsSlice.ts';
 
 const Albums = () => {
   const dispatch = useAppDispatch();

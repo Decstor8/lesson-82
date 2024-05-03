@@ -30,7 +30,6 @@ const Register = () => {
       await dispatch(newUserRegister(state)).unwrap();
       navigate('/');
     } catch (error) {
-      // error
     }
   };
 
