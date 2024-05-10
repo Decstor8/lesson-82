@@ -12,6 +12,7 @@ export interface AlbumsTypes {
   name: string;
   release: string;
   image: string | null;
+  isPublished: boolean;
 }
 
 export interface TracksTypes {
@@ -77,3 +78,4 @@ export interface History {
 }
 
 export type ArtistWithoutId = Omit<ArtistsTypes, '_id'>;
+export type AlbumWithoutId = Omit<AlbumsTypes, '_id'>;
