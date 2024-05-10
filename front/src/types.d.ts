@@ -21,6 +21,7 @@ export interface TracksTypes {
   name: string;
   duration: string;
   number: number;
+  isPublished: boolean;
 }
 
 export interface RegisterMutation {
@@ -79,3 +80,4 @@ export interface History {
 
 export type ArtistWithoutId = Omit<ArtistsTypes, '_id'>;
 export type AlbumWithoutId = Omit<AlbumsTypes, '_id'>;
+export type TrackWithoutId = Omit<TracksTypes, '_id'>;

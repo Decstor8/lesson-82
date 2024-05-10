@@ -1,38 +1,36 @@
-import {Box, Button, Grid, MenuItem, Select, SelectChangeEvent, TextField, Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
+import {Box, Button, CircularProgress, Grid, MenuItem, Select, SelectChangeEvent, TextField} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../../App/hooks.ts';
-import {AlbumWithoutId} from '../../types';
-import {addAlbum} from './albumsThunks.ts';
-import {getArtists} from '../Artists/artistsThunks.ts';
-import {selectArtists} from '../Artists/artistsSlice.ts';
-import MainInput from '../../components/MainInput.tsx';
+import {TrackWithoutId} from '../../types';
+import {addTrack} from './tracksThunks.ts';
+import {getAllAlbums} from '../Albums/albumsThunks.ts';
+import {selectAllAlbums, selectAllAlbumsLoading} from '../Albums/allAlbumsSlice.ts';
 
-const AlbumsForm = () => {
+const TracksForm = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const artists = useAppSelector(selectArtists);
+  const albums = useAppSelector(selectAllAlbums);
+  const isLoading = useAppSelector(selectAllAlbumsLoading);
 
   useEffect(() => {
     const fetchUrl = async () => {
-      await dispatch(getArtists());
+      await dispatch(getAllAlbums());
     };
 
     void fetchUrl();
-  }, [dispatch]);
+  }, []);
 
-  const [state, setState] = useState<AlbumWithoutId>({
-    artist: '',
+  const [state, setState] = useState<TrackWithoutId>({
+    album: '',
     name: '',
-    release: '',
-    image: '',
-    isPublished: false,
+    duration: '',
+    number: 0,
   });
-
-  const formSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await dispatch(addAlbum(state));
+    await dispatch(addTrack(state));
     navigate('/');
 
   };
@@ -49,23 +47,12 @@ const AlbumsForm = () => {
   const selectChange = (e: SelectChangeEvent) => {
     setState((prevState) => ({
       ...prevState,
-      artist: e.target.value,
+      album: e.target.value,
     }));
   };
-
-  const fileInputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, files} = e.target;
-    if (files) {
-      setState(prevState => ({
-        ...prevState, [name]: files[0]
-      }));
-    }
-  };
-
   return (
     <>
-      <Typography variant="h4">Add album</Typography>
-      <Box component="form" onSubmit={formSubmit}>
+      <Box component="form" onSubmit={handleFormSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
@@ -78,40 +65,53 @@ const AlbumsForm = () => {
               fullWidth
             />
           </Grid>
+
           <Grid item xs={12}>
             <TextField
-              required
-              label="release"
-              name="release"
-              autoComplete="release"
-              value={state.release}
+              label="duration"
+              name="duration"
+              autoComplete="duration"
+              value={state.duration}
               onChange={inputChange}
               fullWidth
             />
           </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              required
+              type="number"
+              label="number"
+              name="number"
+              autoComplete="number"
+              value={state.number}
+              onChange={inputChange}
+              fullWidth
+            />
+          </Grid>
+
           <Grid item xs={12} sx={{mb: "20px"}}>
             <Select
               required
-              label="artist"
-              id="artist"
-              name="artist"
-              value={state.artist}
+              label="album"
+              id="album"
+              name="album"
+              value={state.album}
               onChange={selectChange}
               fullWidth
             >
-              {artists.map((elem) => (
+              {!isLoading ? albums.map((elem) => (
                 <MenuItem key={elem._id} value={elem._id}>
                   {elem.name}
                 </MenuItem>
-              ))}
+              )) : <CircularProgress />}
             </Select>
           </Grid>
-          <MainInput label="image" name="image" onChange={fileInputChangeHandler}/>
         </Grid>
-        <Button type="submit">Create album</Button>
+        <Button type="submit" disabled={state.number <= 0}>Create track</Button>
       </Box>
     </>
   );
 };
 
-export default AlbumsForm;
+export default TracksForm;

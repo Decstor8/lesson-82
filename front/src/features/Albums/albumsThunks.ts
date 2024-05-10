@@ -16,6 +16,20 @@ export const getAlbums = createAsyncThunk<AlbumsTypes[], string>(
   },
 );
 
+export const getAllAlbums = createAsyncThunk<AlbumsTypes[]>(
+  'albums/get',
+  async () => {
+    const response = await axiosApi.get<AlbumsTypes[]>('/albums');
+    const albums = response.data;
+
+    if (!albums) {
+      return [];
+    }
+
+    return albums;
+  },
+);
+
 export const addAlbum = createAsyncThunk<void, AlbumWithoutId>(
   'add/albums',
   async (data) => {
@@ -35,4 +49,26 @@ export const addAlbum = createAsyncThunk<void, AlbumWithoutId>(
       throw err;
     }
   }
+);
+
+export const publishAlbum = createAsyncThunk<void, string>(
+  'publish/artist',
+  async (id) => {
+    try {
+      await axiosApi.patch('/albums/' + id + '/togglePublished');
+    } catch (err) {
+      throw err;
+    }
+  },
+);
+
+export const deleteAlbum = createAsyncThunk<void, string>(
+  'delete/tracks',
+  async (id) => {
+    try {
+      await axiosApi.delete('/albums/' + id);
+    } catch (err) {
+      throw err;
+    }
+  },
 );

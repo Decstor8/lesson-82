@@ -12,6 +12,7 @@ import RouteComponents from './components/RouteComponents.tsx';
 import {useAppSelector} from './App/hooks.ts';
 import {selectUser} from './features/Users/usersSlice.ts';
 import AlbumsForm from './features/Albums/AlbumsForm.tsx';
+import TracksForm from './features/Tracks/TracksForm.tsx';
 
 function App() {
   const user = useAppSelector(selectUser);
@@ -24,7 +25,11 @@ function App() {
         <Route path="/tracks/:id" element={<Tracks />} />
         <Route path='/register' element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/track_history" element={user && <TracksHistory />} />
+        <Route path="/track_history" element={
+          <RouteComponents isAllowed={user && user.role !== ''}>
+            {user && <TracksHistory/>}
+          </RouteComponents>
+        } />
         <Route path="/new/artist" element={
           <RouteComponents isAllowed={user && user.role !== ''}>
             <ArtistsForm />
@@ -33,6 +38,11 @@ function App() {
         <Route path="/new/album" element={
           <RouteComponents isAllowed={user && user.role !== ''}>
             <AlbumsForm />
+          </RouteComponents>
+        } />
+        <Route path="/new/track" element={
+          <RouteComponents isAllowed={user && user.role !== ''}>
+            <TracksForm />
           </RouteComponents>
         } />
         <Route path="*" element={<h1>Not found!</h1>} />

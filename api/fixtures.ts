@@ -22,7 +22,7 @@ const run = async () => {
         await dropCollection(db, collectionName);
     }
 
-    const [Miyagi, StasMikhailov] = await Artist.create(
+    const [Miyagi, StasMikhailov, Macan] = await Artist.create(
         {
             name: 'MiyaGi',
             image: 'images/f0438551-c943-4874-9f82-36a54a2c01b9.jpg',
@@ -34,6 +34,12 @@ const run = async () => {
             image: 'images/5981d988-9834-4cf5-aef7-0ef3c3d28b5d.jpeg',
             info: 'Станисла́в Влади́мирович Миха́йлов — российский эстрадный певец, автор песен, актёр и продюсер; народный артист Российской Федерации.',
             isPublished: true,
+        },
+        {
+            name: 'Macan',
+            image: 'images/5981d988-9834-4cf5-aef7-0ef3c3d28b5d.jpeg',
+            info: 'Российски певец',
+            isPublished: false,
         },
     );
 
@@ -55,6 +61,13 @@ const run = async () => {
             name: 'Bounty',
             release: 2016,
             image: 'images/e9fa4f94-87ae-4e89-91d1-35cec7438111.jpeg'
+        },
+        {
+            artist: Macan,
+            name: 'Fearless',
+            release: 2008,
+            image: 'images/32dcb6f7-02cd-49e8-8ada-36351f777874.jpeg',
+            isPublished: true,
         },
     );
 
@@ -160,6 +173,51 @@ const run = async () => {
             name: 'I love',
             duration: '3:51',
             number: 7,
+        },
+    );
+
+    await Track.create(
+        {
+            album: Macan,
+            name: 'Fearless',
+            duration: '4:02',
+            number: 1,
+            isPublished: true,
+        },
+        {
+            album: Macan,
+            name: 'Love Story',
+            duration: '3:56',
+            number: 9,
+            isPublished: true,
+        },
+        {
+            album: Macan,
+            name: 'Change',
+            duration: '4:40',
+            number: 3,
+            isPublished: true,
+        },
+        {
+            album: Macan,
+            name: 'Fifteen',
+            duration: '4:54',
+            number: 4,
+            isPublished: true,
+        },
+        {
+            album: Macan,
+            name: 'White Horse',
+            duration: '3:54',
+            number: 2,
+            isPublished: true,
+        },
+        {
+            album: Macan,
+            name: 'You Belong with Me',
+            duration: '3:51',
+            number: 7,
+            isPublished: true,
         },
     );
 

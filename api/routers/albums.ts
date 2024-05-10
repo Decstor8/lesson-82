@@ -8,14 +8,17 @@ import permit from "../middleware/permit";
 const albumRouter = express.Router();
 
 albumRouter.get('/', async (req, res, next) => {
-  const artistId = req.query.artist as string;
   try {
-    const query = artistId ? { artist: artistId } : {};
-    const albums = await Album.find(query).populate('artist');
+    const albums = await Album.find();
+    const artistIdParam = req.query.artist as string;
+    if (artistIdParam) {
+      const results = await Album.find({artist: artistIdParam}).sort({release: -1});
+      return res.send(results);
+    }
     return res.send(albums);
   } catch (err) {
     next(err);
-    }
+  }
 });
 
 albumRouter.get('/:id', async (req, res, next) => {

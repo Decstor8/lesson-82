@@ -1,5 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {History, tracksHistoryTypes, TracksTypes} from '../../types';
+import {History, tracksHistoryTypes, TracksTypes, TrackWithoutId} from '../../types';
 import axiosApi from '../../axiosApi.ts';
 
 export const getTracks = createAsyncThunk<TracksTypes[], string>(
@@ -47,6 +47,39 @@ export const getTracksHistory = createAsyncThunk<History[], string>(
       }
 
       return items;
+    } catch (err) {
+      throw err;
+    }
+  },
+);
+
+export const addTrack = createAsyncThunk<void, TrackWithoutId>(
+  'add/track',
+  async (data) => {
+    try {
+      await axiosApi.post('/tracks', data);
+    } catch (err) {
+      throw err;
+    }
+  },
+);
+
+export const publishTrack = createAsyncThunk<void, string>(
+  'publish/artist',
+  async (id) => {
+    try {
+      await axiosApi.patch('/tracks/' + id + '/togglePublished');
+    } catch (err) {
+      throw err;
+    }
+  },
+);
+
+export const deleteTrack = createAsyncThunk<void, string>(
+  'delete/tracks',
+  async (id) => {
+    try {
+      await axiosApi.delete('/tracks/' + id);
     } catch (err) {
       throw err;
     }
