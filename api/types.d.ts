@@ -1,20 +1,22 @@
-import { Model } from "mongoose";
+import {Model} from "mongoose";
 
-export interface Artist {
+export interface ArtistTypes {
     name: string;
-    images: string | null;
+    image: string | null;
     info: string;
-  }
+    isPublished: boolean;
+}
 
-  export interface UserFields {
+export interface UserTypes {
     username: string;
     password: string;
     token: string;
-  }
+    role: string;
+}
 
-  interface UserMethods {
+interface UserMethods {
     checkPassword(password: string): Promise<boolean>;
     generateToken(): void;
-  }
+}
 
-  type UserModel = Model<UserFields, {}, UserMethods>;
+type UserModel = Model<UserTypes, {}, UserMethods>;

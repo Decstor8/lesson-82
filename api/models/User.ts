@@ -1,24 +1,25 @@
 import bcrypt from 'bcrypt';
-import mongoose from "mongoose";
-import { UserFields, UserMethods, UserModel } from "../types";
+import mongoose, {HydratedDocument} from "mongoose";
+import {UserMethods, UserModel, UserTypes} from "../types";
 import { randomUUID } from 'crypto';
 
 const SALT_WORK_FACTOR = 10;
 
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema<UserFields, UserModel, UserMethods>({
+const UserSchema = new Schema<UserTypes, UserModel, UserMethods>({
     username: {
         type: String,
         required: true,
         unique: true,
         validate: {
-            validator: async (username: string) => {
-                const user = await User.findOne({username});
-                if (user) return false;
-                return true;
+            validator: async function(this: HydratedDocument<UserTypes>, value: string): Promise<Boolean> {
+                if (!this.isModified('username')) return true;
+
+                const user: HydratedDocument<UserTypes> | null = await User.findOne({username: value});
+                return !user;
             },
-            message: 'This user is already registered!'
+            message: 'Этот пользователь уже зарегистрирован!'
         }
     },
     password: {
@@ -28,11 +29,17 @@ const UserSchema = new Schema<UserFields, UserModel, UserMethods>({
     token: {
         type: String,
         required: true,
+    },
+    role: {
+        type: String,
+        required: true,
+        enum: ['admin', 'user'],
+        default: 'user',
     }
 });
 
 UserSchema.methods.checkPassword = function(password: string) {
-    return bcrypt.compare(password, this.password); 
+    return bcrypt.compare(password, this.password);
 };
 
 UserSchema.methods.generateToken = function() {
@@ -58,5 +65,5 @@ UserSchema.set('toJSON', {
     },
 });
 
-const User = mongoose.model<UserFields, UserModel>('User', UserSchema);
+const User = mongoose.model<UserTypes, UserModel>('User', UserSchema);
 export default User;

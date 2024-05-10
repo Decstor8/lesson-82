@@ -1,34 +1,91 @@
-import express from 'express';
-import Artist from '../models/Artist';
-import { imageUpload } from '../multer';
-const artistRouter = express.Router();
+import {Router} from "express";
+import Artist from "../models/Artist";
+import mongoose, {Types} from "mongoose";
+import {ArtistTypes} from "../types";
+import {imageUpload} from "../multer";
+import auth from "../middleware/auth";
+import permit from "../middleware/permit";
 
-artistRouter.get('/', async (_req, res, next) => {
+const artistsRouter = Router();
+
+artistsRouter.get('/', async (_req, res, next) => {
   try {
-    const artists = await Artist.find();
-    res.json(artists);
+    const results = await Artist.find();
+
+    return res.send(results);
   } catch (err) {
     next(err);
-    }
+  }
 });
 
-artistRouter.post('/', imageUpload.single('images'), async (req, res) => {
-  if (!req.body.name) {
-    return res.status(422).json({ message: "Имя артиста обязательно" });
-  }
-
-  const artist = new Artist({
-    name: req.body.name,
-    images: req.file ? req.file.filename : null,
-    info: req.body.info
-  });
-
+artistsRouter.post('/', auth, imageUpload.single('image'),  async (req, res, next) => {
   try {
-    const newArtist = await artist.save();
-    return res.send(newArtist);
+    const artistData: ArtistTypes = {
+      name: req.body.name,
+      image: req.file ? req.file.filename : null,
+      info: req.body.info,
+      isPublished: req.body.isPublished,
+    };
+
+    const artist = new Artist(artistData);
+
+    await artist.save();
+    return res.send(artist);
   } catch (err) {
-    res.status(422).json({ message: "Ошибка при добавлении артиста: " + err});
+    if (err instanceof mongoose.Error.ValidationError) {
+      return res.status(422).send(err);
+    }
+    next(err);
   }
 });
 
-export default artistRouter;
+artistsRouter.delete('/:id', auth, permit('admin'), async (req, res, next) => {
+  try {
+    let _id: Types.ObjectId;
+
+    try {
+      _id = new Types.ObjectId(req.params.id);
+    } catch {
+      return res.status(422).send({error: 'Не верный идентификатор'});
+    }
+
+    const artist = await Artist.findByIdAndDelete(_id);
+
+    if (!artist) {
+      return res.status(403).send({error: 'Артист не найден'});
+    }
+
+    return res.send({message: 'Artist deleted!'});
+  } catch (err) {
+    return next(err);
+  }
+});
+
+artistsRouter.patch('/:id/togglePublished', auth, permit('admin'), async (req, res, next) => {
+  try {
+    let _id: Types.ObjectId;
+
+    try {
+      _id = new Types.ObjectId(req.params.id);
+    } catch {
+      return res.status(422).send({error: 'Не верный идентификатор'});
+    }
+
+    const artist = await Artist.findById(_id);
+
+    if (!artist) {
+      return res.status(403).send({error: `Арист не найден`});
+    }
+
+    await artist.updateOne({isPublished: !artist.isPublished});
+    await artist.save();
+
+    return res.send(artist);
+
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
+export default artistsRouter;

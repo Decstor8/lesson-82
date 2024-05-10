@@ -41,9 +41,6 @@ const Artists = () => {
                     <Typography gutterBottom variant="h6" component="div">
                       {elem.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {elem.info}
-                    </Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>

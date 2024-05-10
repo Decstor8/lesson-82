@@ -1,59 +1,66 @@
 import {MainError, UserTypes, ValidationError} from '../../types';
 import {createSlice} from '@reduxjs/toolkit';
-import {newUserRegister, newsLoginUser} from './userThunks.ts';
 import {RootState} from '../../App/store.ts';
+import {loginUser, newUser} from './userThunks';
 
-export interface  Register {
+interface UserState {
   user: UserTypes | null;
-  isLoadingRegister: boolean;
+  registerLoading: boolean;
   registerError: ValidationError | null;
-  isLoginLoading: boolean;
+  loginLoading: boolean;
   loginError: MainError | null;
 }
 
-const initialState: Register = {
+const initialState: UserState = {
   user: null,
-  isLoadingRegister: false,
+  registerLoading: false,
   registerError: null,
-  isLoginLoading: false,
+  loginLoading: false,
   loginError: null,
 };
 
 export const userSlice = createSlice({
   name: 'users',
   initialState,
-  reducers: {},
+  reducers: {
+    unsetUser: (state) => {
+      state.user = null;
+    }
+  },
   extraReducers: (builder) => {
-    builder.addCase(newUserRegister.pending, (state) => {
-      state.isLoadingRegister = true;
+    builder.addCase(newUser.pending, (state) => {
+      state.registerLoading = true;
       state.registerError = null;
     });
-    builder.addCase(newUserRegister.fulfilled, (state, {payload: items}) => {
-      state.isLoadingRegister = true;
-      state.user = items.user;
+    builder.addCase(newUser.fulfilled, (state, {payload: data}) => {
+      state.registerLoading = false;
+      state.user = data.user;
     });
-    builder.addCase(newUserRegister.rejected, (state, {payload: error}) => {
-      state.isLoadingRegister = false;
+    builder.addCase(newUser.rejected, (state, {payload: error}) => {
+      state.registerLoading = false;
       state.registerError = error || null;
     });
-    builder.addCase(newsLoginUser.pending, (state) => {
-      state.isLoginLoading = true;
+
+    builder.addCase(loginUser.pending, (state) => {
+      state.loginLoading = true;
       state.loginError = null;
     });
-    builder.addCase(newsLoginUser.fulfilled, (state, {payload: items}) => {
-      state.isLoginLoading = false;
-      state.user = items.user;
+    builder.addCase(loginUser.fulfilled, (state, {payload: data}) => {
+      state.loginLoading = false;
+      state.user = data.user;
     });
-    builder.addCase(newsLoginUser.rejected, (state, {payload: error}) => {
-      state.isLoginLoading = false;
+    builder.addCase(loginUser.rejected, (state, {payload: error}) => {
+      state.loginLoading = false;
       state.loginError = error || null;
     });
   },
 });
 
 export const usersReducer = userSlice.reducer;
+export const {unsetUser} = userSlice.actions;
+
 export const selectUser = (state: RootState) => state.users.user;
-export const selectRegisterLoading = (state: RootState) => state.users.isLoadingRegister;
+export const selectRegisterLoading = (state: RootState) => state.users.registerLoading;
 export const selectRegisterError = (state: RootState) => state.users.registerError;
-export const selectLoginLoading = (state: RootState) => state.users.isLoginLoading;
+export const selectLoginLoading = (state: RootState) => state.users.loginLoading;
 export const selectLoginError = (state: RootState) => state.users.loginError;
