@@ -31,17 +31,21 @@ const UserMenu: React.FC<Props> = ({user}) => {
     dispatch(logout());
   };
 
+  const toNewArtist = () => {
+    navigate('/new/artist');
+  }
+
   return (
     <>
       <Button color="inherit" onClick={handleClick}>
         Hello, {user.username}!
       </Button>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} keepMounted>
-        <MenuItem>Profile</MenuItem>
-        <MenuItem>My account</MenuItem>
+        <MenuItem onClick={toNewArtist}>Add artist</MenuItem>
+        <MenuItem>Add album</MenuItem>
+        <MenuItem>Add track</MenuItem>
         <MenuItem onClick={handleNav}>Track history</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
-        <MenuItem>Logout</MenuItem>
       </Menu>
     </>
   );
