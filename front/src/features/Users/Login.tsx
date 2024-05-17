@@ -5,7 +5,8 @@ import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {useAppDispatch, useAppSelector} from '../../App/hooks.ts';
 import {selectLoginError} from './usersSlice.ts';
-import {newsLoginUser} from './userThunks';
+import {googleLogin, loginUser} from './userThunks';
+import {GoogleLogin} from '@react-oauth/google';
 
 const Login = () => {
   const dispatch = useAppDispatch();
@@ -13,7 +14,7 @@ const Login = () => {
   const error = useAppSelector(selectLoginError);
 
   const [state, setState] = useState<LoginMutation>({
-    username: '',
+    email: '',
     password: '',
   });
 
@@ -27,8 +28,12 @@ const Login = () => {
   const submitFormHandler = async (e: FormEvent) => {
     e.preventDefault();
 
-    await dispatch(newsLoginUser(state)).unwrap();
+    await dispatch(loginUser(state)).unwrap();
     navigate('/');
+  };
+
+  const googleLoginHandler = async (credential: string) => {
+    await dispatch(googleLogin(credential)).unwrap();
   };
 
   return (
@@ -53,16 +58,29 @@ const Login = () => {
               {error.err}
             </Alert>
           )}
+          <Box sx={{pt: 2}}>
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                if (credentialResponse.credential) {
+                  void googleLoginHandler(credentialResponse.credential);
+                }
+
+                navigate('/');
+              }}
+              onError={() => {
+                console.log('Login failed');
+              }} />
+          </Box>
           <Box component="form" onSubmit={submitFormHandler} sx={{mt: 3}}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   required
-                  label="Username"
-                  name="username"
-                  value={state.username}
+                  label="Email"
+                  name="email"
+                  value={state.email}
                   onChange={inputChangeHandler}
-                  autoComplete="current-username"
+                  autoComplete="current-email"
                   fullWidth
                 />
               </Grid>

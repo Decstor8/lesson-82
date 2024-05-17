@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
+import crypto from 'crypto';
 import config from './config';
 import Artist from './models/Artist';
 import Album from './models/Album';
 import Track from './models/Track';
+import User from './models/User';
 
 const dropCollection = async (db: mongoose.Connection, collectionName: string) => {
     try {
@@ -319,6 +321,24 @@ const run = async () => {
             number: 7,
         },
     );
+
+    await User.create(
+        {
+            email: 'admin@example.com',
+            password: 'adminpass',
+            token: crypto.randomUUID(),
+            role: 'admin',
+            displayName: 'Admin',
+        },
+        {
+            email: 'user@example.com',
+            password: 'userpass',
+            token: crypto.randomUUID(),
+            role: 'user',
+            displayName: 'User',
+        },
+    );
+
     await db.close();
 };
 

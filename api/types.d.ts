@@ -8,10 +8,13 @@ export interface ArtistTypes {
 }
 
 export interface UserTypes {
-    username: string;
+    email: string;
     password: string;
     token: string;
     role: string;
+    googleID: string;
+    displayName: string;
+    image: string | null;
 }
 
 interface UserMethods {

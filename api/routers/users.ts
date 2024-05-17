@@ -1,52 +1,106 @@
-import express from 'express';
-import User from '../models/User';
-import mongoose from 'mongoose';
+import {Router} from "express";
+import User from "../models/User";
+import mongoose, {mongo} from "mongoose";
+import {imageUpload} from "../multer";
+import {OAuth2Client} from "google-auth-library";
+import config from "../config";
 
-const usersRouter = express.Router();
+const usersRouter = Router();
+const client = new OAuth2Client(config.google.clientId);
 
-usersRouter.post('/', async (req, res, next) => {
+usersRouter.post('/', imageUpload.single('image'), async (req, res, next) => {
     try {
         const user = new User({
-            username: req.body.username,
+            email: req.body.email,
             password: req.body.password,
+            displayName: req.body.displayName,
+            image: req.file ? req.file.filename : null,
         });
 
         user.generateToken();
-
         await user.save();
-
-        return res.send({message: 'Регистрация завершена успешно', user});
+        return res.send({message: 'ok!', user});
     } catch (err) {
         if (err instanceof mongoose.Error.ValidationError) {
             return res.status(422).send(err);
         }
 
-        next(err);
+        if (err instanceof mongo.MongoServerError && err.code === 11000) {
+            return res.status(422).send({message: 'электронная почта должна быть уникальной'});
+        }
+
+        return next(err);
     }
 });
 
- usersRouter.post('/sessions', async (req, res, _next) => {
-    const user = await User.findOne({username: req.body.username});
-    if (!user) {
-        return res.status(400).send({error: 'Имя пользователя или пароль не верны!'});
+usersRouter.post('/sessions', async (req, res, next) => {
+    try {
+        const user = await User.findOne({email: req.body.email});
+
+        if(!user) {
+            return res.status(422).send({error: 'адрес электронной почты и/или пароль не найдены!'});
+        }
+
+        const isMatch = await user.checkPassword(req.body.password);
+
+        if(!isMatch) {
+            return res.status(422).send({error: 'адрес электронной почты и/или пароль не найдены!'});
+        }
+
+        user.generateToken();
+        await user.save();
+
+        return res.send({message: 'почта и пароль верны!', user});
+    } catch (err) {
+        return next(err);
     }
+});
 
-    const isMatch = await user.checkPassword(req.body.password);
+usersRouter.post('/google', async (req, res, next) => {
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.credential,
+            audience: config.google.clientId,
+        });
 
-    if (!isMatch) {
-        return res.status(400).send({error: 'Имя пользователя или пароль не верны!'});
+        const payload = ticket.getPayload();
+
+        if (!payload) {
+            return res.status(400).send({error: 'Ошибка входа в Google!'});
+        }
+
+        const email = payload['email'];
+        const id = payload['sub'];
+        const displayName = payload['name'];
+
+        if (!email) {
+            return res.status(400).send({error: 'Электронная почта отсутствует'});
+        }
+
+        let user = await User.findOne({googleID: id});
+
+        if (!user) {
+            user = new User({
+                email,
+                password: crypto.randomUUID(),
+                googleID: id,
+                displayName,
+            });
+        }
+
+        user.generateToken();
+        await user.save();
+
+        return res.send({message: 'Вход через Google успешен!', user});
+    } catch (err) {
+        return next(err);
     }
-
-    user.generateToken();
-    user.save();
-
-    return res.send({message: 'Имя пользователя и пароль корректны!', user});
- });
+});
 
 usersRouter.delete('/sessions', async (req, res, next) => {
     try {
         const headerValue = req.get('Authorization');
-        const messageSuccess = {message: 'Success!'};
+        const messageSuccess = {message: 'Успешно!'};
 
         if (!headerValue) {
             return res.send(messageSuccess);
@@ -72,25 +126,5 @@ usersRouter.delete('/sessions', async (req, res, next) => {
     }
 });
 
- usersRouter.get('/secret', async (req, res, next) => {
-    try {
-        const tokenData = req.get('Authorization');
-
-        if(!tokenData) {
-            return res.status(401).send({error: 'Токен не был предоставлен!'});
-        } 
-
-        const [_, token] = tokenData.split(' ');
-        const user = await User.findOne({token});
-
-        if (!user) {
-            return res.status(403).send({error: 'Не верный токен!'});
-        }
-
-        res.send({message: 'Секретное сообщение)', username: user.username});
-    } catch (e) {
-      next(e);
-    }
- });
 
 export default usersRouter;

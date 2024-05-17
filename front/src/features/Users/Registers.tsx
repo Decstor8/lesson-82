@@ -5,7 +5,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {Link as RouterLink, useNavigate} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../App/hooks";
 import {selectRegisterError} from "./usersSlice.ts";
-import {newUserRegister} from "./userThunks";
+import {newUser} from "./userThunks";
 
 const Register = () => {
   const dispatch = useAppDispatch();
@@ -13,7 +13,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   const [state, setState] = useState<RegisterMutation>({
-    username: '',
+    email: '',
     password: '',
   });
 
@@ -27,7 +27,7 @@ const Register = () => {
   const submitFormHandler = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      await dispatch(newUserRegister(state)).unwrap();
+      await dispatch(newUser(state)).unwrap();
       navigate('/');
     } catch (error) {
     }
@@ -61,13 +61,13 @@ const Register = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                label="Username"
-                name="username"
-                autoComplete="new-username"
-                value={state.username}
+                label="email"
+                name="email"
+                autoComplete="new-email"
+                value={state.email}
                 onChange={inputChangeHandler}
-                error={Boolean(getFieldError('username'))}
-                helperText={getFieldError('username')}
+                error={Boolean(getFieldError('email'))}
+                helperText={getFieldError('email')}
               />
             </Grid>
             <Grid item xs={12}>
