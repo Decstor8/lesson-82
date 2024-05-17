@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {UserTypes} from '../types';
-import {Button, Menu, MenuItem} from '@mui/material';
+import {Avatar, Button, CardMedia, Menu, MenuItem} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {logout} from '../features/Users/userThunks.ts';
 import {useAppDispatch} from '../App/hooks.ts';
+import {apiUrl} from '../constants.ts';
 
 interface Props {
   user: UserTypes;
@@ -46,8 +47,9 @@ const UserMenu: React.FC<Props> = ({user}) => {
   return (
     <>
       <Button color="inherit" onClick={handleClick}>
-        Hello, {user.email}!
+        Hello, {user.displayName}!
       </Button>
+      {user.image ? <CardMedia component="img" style={{height: 200, width: 200, borderRadius: '50%', margin: '10px'}} image={`${apiUrl}/${user.image}`}/> : <Avatar sx={{marginLeft: 2}} />}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} keepMounted>
         <MenuItem onClick={toNewArtist}>Add artist</MenuItem>
         <MenuItem onClick={toNewAlbum}>Add album</MenuItem>

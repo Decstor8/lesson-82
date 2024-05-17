@@ -1,9 +1,10 @@
 import axios from 'axios';
 import {Store} from '@reduxjs/toolkit';
 import {RootState} from './App/store.ts';
+import {apiUrl} from './constants.ts';
 
 const axiosApi = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: apiUrl,
 });
 
 export const addInterceptors = (store: Store<RootState>) => {
@@ -14,6 +15,5 @@ export const addInterceptors = (store: Store<RootState>) => {
     return config;
   });
 };
-
 
 export default axiosApi;
