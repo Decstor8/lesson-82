@@ -1,12 +1,12 @@
 import {Box, Button, Grid, MenuItem, Select, SelectChangeEvent, TextField, Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
+import MainInput from '../../components/MainInput';
 import {useNavigate} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../../App/hooks.ts';
 import {AlbumWithoutId} from '../../types';
 import {addAlbum} from './albumsThunks.ts';
 import {getArtists} from '../Artists/artistsThunks.ts';
 import {selectArtists} from '../Artists/artistsSlice.ts';
-import MainInput from '../../components/MainInput.tsx';
 
 const AlbumsForm = () => {
   const navigate = useNavigate();
@@ -80,7 +80,6 @@ const AlbumsForm = () => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              required
               label="release"
               name="release"
               autoComplete="release"
